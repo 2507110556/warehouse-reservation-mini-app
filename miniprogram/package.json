@@ -1,0 +1,19 @@
+{
+  "name": "warehouse-reservation-miniapp",
+  "version": "1.0.0",
+  "description": "线上预约仓库微信小程序",
+  "main": "app.js",
+  "scripts": {
+    "dev": "echo \"Development mode\"",
+    "build": "echo \"Build for production\""
+  },
+  "keywords": [
+    "weixin",
+    "miniapp",
+    "reservation",
+    "warehouse"
+  ],
+  "author": "2507110556",
+  "license": "MIT",
+  "dependencies": {}
+}
