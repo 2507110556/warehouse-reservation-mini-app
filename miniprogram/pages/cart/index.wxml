@@ -1,0 +1,74 @@
+<!--pages/cart/index.wxml-->
+<view class="container">
+  <!-- 购物车列表 -->
+  <view class="cart-list" wx:if="{{cart.length > 0}}">
+    <!-- 全选操作 -->
+    <view class="cart-header">
+      <view class="select-all flex-center">
+        <checkbox id="select-all" checked="{{isSelectAll}}" bindchange="selectAll"></checkbox>
+        <label for="select-all" class="select-text">全选</label>
+      </view>
+      <text class="edit-btn" bindtap="toggleEditMode">{{editMode ? '完成' : '编辑'}}</text>
+    </view>
+
+    <!-- 购物车商品 -->
+    <block wx:for="{{cart}}" wx:key="id">
+      <view class="cart-item">
+        <view class="item-checkbox flex-center">
+          <checkbox value="{{item.id}}" checked="{{item.checked}}" bindchange="selectItem" data-index="{{index}}"></checkbox>
+        </view>
+
+        <view class="item-content" bindtap="navigateToDetail" data-id="{{item.productId}}">
+          <image src="{{item.image}}" class="item-image"></image>
+          <view class="item-info flex-1">
+            <text class="item-name">{{item.productName}}</text>
+            <text class="item-specs" wx:if="{{item.specs && Object.keys(item.specs).length > 0}}">
+              <block wx:for="{{Object.entries(item.specs)}}" wx:key="*this">
+                {{item[0]}}: {{item[1]}}
+                <text wx:if="{{index < Object.entries(item.specs).length - 1}}">、</text>
+              </block>
+            </text>
+            <view class="item-time" wx:if="{{item.appointmentDate}}">
+              <text>预约时间: {{item.appointmentDate}} {{item.appointmentTime}}</text>
+            </view>
+          </view>
+        </view>
+
+        <view class="item-price-qty">
+          <text class="item-price">¥{{item.price}}</text>
+          <view class="quantity-control" wx:if="{{!editMode}}">
+            <button class="qty-btn" bindtap="decreaseQuantity" data-index="{{index}}">−</button>
+            <input class="qty-input" type="number" value="{{item.quantity}}" bindinput="inputQuantity" data-index="{{index}}"></input>
+            <button class="qty-btn" bindtap="increaseQuantity" data-index="{{index}}">+</button>
+          </view>
+          <view class="qty-display" wx:else>×{{item.quantity}}</view>
+        </view>
+
+        <!-- 删除按钮 -->
+        <view class="delete-btn" bindtap="deleteItem" data-index="{{index}}" wx:if="{{editMode}}">
+          <image src="/images/delete.png"></image>
+        </view>
+      </view>
+    </block>
+  </view>
+
+  <!-- 空购物车提示 -->
+  <view class="empty-cart" wx:else>
+    <image src="/images/empty-cart.png" class="empty-icon"></image>
+    <text class="empty-text">购物车空空如也</text>
+    <text class="empty-desc">去逛逛看看有什么喜欢的商品吧</text>
+    <button class="shop-btn" bindtap="navigateToHome">去购物</button>
+  </view>
+
+  <!-- 底部结算栏 -->
+  <view class="cart-footer" wx:if="{{cart.length > 0}}">
+    <view class="footer-left">
+      <text class="total-label">��计:</text>
+      <text class="total-price">¥{{totalPrice}}</text>
+      <text class="item-count">({{selectedCount}}件)</text>
+    </view>
+    <view class="footer-right">
+      <button class="settlement-btn" bindtap="goCheckout" disabled="{{selectedCount === 0}}">{{editMode ? '删除' : '结算'}}</button>
+    </view>
+  </view>
+</view>

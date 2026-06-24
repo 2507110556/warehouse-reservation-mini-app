@@ -1,0 +1,169 @@
+<!--pages/product-detail/index.wxml-->
+<view class="container">
+  <!-- 图片轮播 -->
+  <swiper class="product-swiper" 
+          indicator-dots="true" 
+          autoplay="false" 
+          circular="true">
+    <block wx:for="{{product.images}}" wx:key="*this">
+      <swiper-item>
+        <image src="{{item}}" class="product-img"></image>
+      </swiper-item>
+    </block>
+  </swiper>
+
+  <!-- 产品信息 -->
+  <view class="product-section">
+    <view class="product-header">
+      <view class="price-section">
+        <text class="price">¥{{product.price}}</text>
+        <text class="old-price">¥{{product.oldPrice}}</text>
+      </view>
+      <view class="favorite-btn" bindtap="toggleFavorite">
+        <image src="{{isFavorite ? '/images/heart-filled.png' : '/images/heart.png'}}"></image>
+      </view>
+    </view>
+
+    <text class="product-name">{{product.name}}</text>
+    <text class="product-desc">{{product.description}}</text>
+
+    <!-- 库存和销量 -->
+    <view class="stats">
+      <view class="stat-item">
+        <text class="stat-label">库存:</text>
+        <text class="stat-value">{{product.stock}}</text>
+      </view>
+      <view class="stat-item">
+        <text class="stat-label">销量:</text>
+        <text class="stat-value">{{product.sales}}</text>
+      </view>
+      <view class="stat-item">
+        <text class="stat-label">评价:</text>
+        <text class="stat-value">{{product.rating}}</text>
+      </view>
+    </view>
+
+    <!-- 规格选择 -->
+    <view class="specs" wx:if="{{product.specs.length > 0}}">
+      <text class="specs-title">商品规格</text>
+      <block wx:for="{{product.specs}}" wx:key="id">
+        <view class="spec-group">
+          <text class="spec-name">{{item.name}}</text>
+          <view class="spec-options">
+            <block wx:for="{{item.options}}" wx:key="*this">
+              <view class="spec-option {{selectedSpecs[item.name] === opt ? 'active' : ''}}" 
+                    bindtap="selectSpec" 
+                    data-spec-name="{{item.name}}" 
+                    data-spec-value="{{opt}}">
+                {{opt}}
+              </view>
+            </block>
+          </view>
+        </view>
+      </block>
+    </view>
+
+    <!-- 数量选择 -->
+    <view class="quantity-section">
+      <text class="quantity-label">数量</text>
+      <view class="quantity-control">
+        <button class="qty-btn" bindtap="decreaseQuantity" disabled="{{quantity <= 1}}">−</button>
+        <input class="qty-input" type="number" value="{{quantity}}" bindinput="inputQuantity"></input>
+        <button class="qty-btn" bindtap="increaseQuantity" disabled="{{quantity >= product.stock}}">+</button>
+      </view>
+    </view>
+  </view>
+
+  <!-- 预约时间 -->
+  <view class="appointment-section" wx:if="{{product.isAppointmentRequired}}">
+    <text class="section-title">选择预约时间</text>
+    <view class="date-picker">
+      <picker mode="date" value="{{appointmentDate}}" start="{{today}}" bindchange="selectDate">
+        <view class="date-input">
+          <text>预约日期: {{appointmentDate}}</text>
+          <image src="/images/calendar.png"></image>
+        </view>
+      </picker>
+    </view>
+
+    <view class="time-slots">
+      <text class="time-label">选择时间段</text>
+      <view class="slots-grid">
+        <block wx:for="{{availableTimeSlots}}" wx:key="id">
+          <view class="time-slot {{selectedTimeSlot === item.id ? 'active' : item.available ? '' : 'disabled'}}" 
+                bindtap="selectTimeSlot" 
+                data-slot-id="{{item.id}}"
+                disabled="{{!item.available}}">
+            {{item.time}}
+            <text class="slot-count" wx:if="{{item.available}}">{{item.remainCount}}/{{item.totalCount}}</text>
+          </view>
+        </block>
+      </view>
+    </view>
+  </view>
+
+  <!-- 详情描述 -->
+  <view class="detail-section">
+    <text class="section-title">商品详情</text>
+    <rich-text nodes="{{product.detailHtml}}"></rich-text>
+  </view>
+
+  <!-- 评价列表 -->
+  <view class="review-section">
+    <view class="review-header">
+      <text class="section-title">用户评价 ({{product.reviewCount}})</text>
+      <view class="rating-avg">
+        <text class="rating-score">{{product.avgRating}}</text>
+        <text class="rating-level">{{ratingLevel}}</text>
+      </view>
+    </view>
+
+    <view class="reviews">
+      <block wx:for="{{reviews}}" wx:key="id">
+        <view class="review-item">
+          <view class="review-header-info">
+            <image src="{{item.userAvatar}}" class="user-avatar"></image>
+            <view class="user-info">
+              <text class="user-name">{{item.userName}}</text>
+              <view class="rating">
+                <block wx:for="{{5}}" wx:key="*this">
+                  <image src="{{index < item.rating ? '/images/star-filled.png' : '/images/star.png'}}"></image>
+                </block>
+              </view>
+            </view>
+            <text class="review-time">{{item.createTime}}</text>
+          </view>
+          <text class="review-content">{{item.content}}</text>
+          <view class="review-images" wx:if="{{item.images.length > 0}}">
+            <block wx:for="{{item.images}}" wx:key="*this">
+              <image src="{{item}}" class="review-img"></image>
+            </block>
+          </view>
+        </view>
+      </block>
+    </view>
+
+    <view class="more-reviews" bindtap="navigateToReviews">
+      <text>查看全部评价</text>
+      <image src="/images/arrow-right.png"></image>
+    </view>
+  </view>
+
+  <!-- 底部操作栏 -->
+  <view class="bottom-action">
+    <view class="action-left">
+      <button class="service-btn" bindtap="contactService">
+        <image src="/images/service.png"></image>
+        <text>客服</text>
+      </button>
+      <button class="share-btn" open-type="share">
+        <image src="/images/share.png"></image>
+        <text>分享</text>
+      </button>
+    </view>
+    <view class="action-right">
+      <button class="add-cart-btn" bindtap="addToCart">加入购物车</button>
+      <button class="buy-now-btn" bindtap="buyNow">立即预约</button>
+    </view>
+  </view>
+</view>
