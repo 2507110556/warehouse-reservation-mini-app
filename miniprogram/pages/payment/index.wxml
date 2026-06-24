@@ -1,0 +1,81 @@
+<!--pages/payment/index.wxml-->
+<view class="container">
+  <!-- 订单信息 -->
+  <view class="order-info">
+    <view class="info-item">
+      <text class="info-label">订单号</text>
+      <text class="info-value">{{orderId}}</text>
+    </view>
+    <view class="info-item">
+      <text class="info-label">应付金额</text>
+      <text class="info-value amount">¥{{amount}}</text>
+    </view>
+  </view>
+
+  <!-- 支付方式选择 -->
+  <view class="payment-methods">
+    <text class="section-title">选择支付方式</text>
+    
+    <!-- 微信支付 -->
+    <view class="method-item {{paymentMethod === 'wechat' ? 'active' : ''}}" bindtap="selectPaymentMethod" data-method="wechat">
+      <view class="method-left">
+        <image src="/images/wechat-pay.png" class="method-icon"></image>
+        <view class="method-info">
+          <text class="method-name">微信支付</text>
+          <text class="method-desc">使用微信钱包支付</text>
+        </view>
+      </view>
+      <view class="radio" wx:if="{{paymentMethod === 'wechat'}}">
+        <view class="radio-checked"></view>
+      </view>
+      <view class="radio" wx:else></view>
+    </view>
+
+    <!-- 支付宝支付 -->
+    <view class="method-item {{paymentMethod === 'alipay' ? 'active' : ''}}" bindtap="selectPaymentMethod" data-method="alipay">
+      <view class="method-left">
+        <image src="/images/alipay.png" class="method-icon"></image>
+        <view class="method-info">
+          <text class="method-name">支付宝</text>
+          <text class="method-desc">使用支付宝支付</text>
+        </view>
+      </view>
+      <view class="radio" wx:if="{{paymentMethod === 'alipay'}}">
+        <view class="radio-checked"></view>
+      </view>
+      <view class="radio" wx:else></view>
+    </view>
+
+    <!-- 余额支付 -->
+    <view class="method-item {{paymentMethod === 'balance' ? 'active' : ''}}" bindtap="selectPaymentMethod" data-method="balance">
+      <view class="method-left">
+        <image src="/images/wallet.png" class="method-icon"></image>
+        <view class="method-info">
+          <text class="method-name">余额支付</text>
+          <text class="method-desc">账户余额: ¥{{accountBalance}}</text>
+        </view>
+      </view>
+      <view class="radio" wx:if="{{paymentMethod === 'balance'}}">
+        <view class="radio-checked"></view>
+      </view>
+      <view class="radio" wx:else></view>
+    </view>
+  </view>
+
+  <!-- 提示信息 -->
+  <view class="tips">
+    <text class="tips-title">💡 支付说明</text>
+    <text class="tips-content">
+      • 微信支付安全快速，大额建议使用
+      • 支付后订单会立即生效
+      • 如有问题，请联系客服
+    </text>
+  </view>
+
+  <!-- 支付按钮 -->
+  <view class="bottom-action">
+    <button class="pay-btn" bindtap="startPayment" loading="{{paying}}">
+      {{paying ? '支付中...' : '确认支付'}}
+    </button>
+  </view>
+</view>

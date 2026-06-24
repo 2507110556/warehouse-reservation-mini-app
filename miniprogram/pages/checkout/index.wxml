@@ -1,0 +1,101 @@
+<!--pages/checkout/index.wxml-->
+<view class="container">
+  <!-- 收货地址 -->
+  <view class="address-section">
+    <view class="section-title">收货地址</view>
+    <view class="address-card" bindtap="selectAddress" wx:if="{{selectedAddress}}">
+      <view class="address-header">
+        <text class="address-name">{{selectedAddress.name}}</text>
+        <text class="address-phone">{{selectedAddress.phone}}</text>
+      </view>
+      <view class="address-detail">
+        <text>{{selectedAddress.province}} {{selectedAddress.city}} {{selectedAddress.district}} {{selectedAddress.detail}}</text>
+      </view>
+      <view class="change-address" bindtap="selectAddress">
+        <image src="/images/arrow-right.png"></image>
+      </view>
+    </view>
+    <view class="no-address" bindtap="selectAddress" wx:else>
+      <text>请选择收货地址</text>
+      <image src="/images/arrow-right.png"></image>
+    </view>
+  </view>
+
+  <!-- 订单商品 -->
+  <view class="items-section">
+    <view class="section-title">订单商品</view>
+    <block wx:for="{{selectedItems}}" wx:key="id">
+      <view class="item">
+        <image src="{{item.image}}" class="item-image"></image>
+        <view class="item-info">
+          <text class="item-name">{{item.productName}}</text>
+          <text class="item-specs" wx:if="{{item.specs && Object.keys(item.specs).length > 0}}">
+            <block wx:for="{{Object.entries(item.specs)}}" wx:key="*this">
+              {{item[0]}}: {{item[1]}}
+              <text wx:if="{{index < Object.entries(item.specs).length - 1}}">、</text>
+            </block>
+          </text>
+          <view class="item-appointment" wx:if="{{item.appointmentDate}}">
+            <text>预约: {{item.appointmentDate}} {{item.appointmentTime}}</text>
+          </view>
+        </view>
+        <view class="item-price-qty">
+          <text class="item-price">¥{{item.price}}</text>
+          <text class="item-qty">×{{item.quantity}}</text>
+        </view>
+      </view>
+    </block>
+  </view>
+
+  <!-- 优惠券选择 -->
+  <view class="coupon-section">
+    <view class="coupon-header flex-between">
+      <text class="section-title">优惠券</text>
+      <view class="coupon-select" bindtap="selectCoupon">
+        <text>{{selectedCoupon ? selectedCoupon.name : '选择优惠券'}}</text>
+        <image src="/images/arrow-right.png"></image>
+      </view>
+    </view>
+    <view class="coupon-info" wx:if="{{selectedCoupon}}">
+      <text class="coupon-discount">-¥{{selectedCoupon.discount}}</text>
+    </view>
+  </view>
+
+  <!-- 备注 -->
+  <view class="remark-section">
+    <view class="section-title">备注</view>
+    <textarea class="remark-input" 
+              placeholder="添加订单备注（选填）"
+              value="{{remark}}"
+              bindinput="inputRemark"
+              maxlength="200"></textarea>
+    <view class="word-count">{{remark.length}}/200</view>
+  </view>
+
+  <!-- 价格详情 -->
+  <view class="price-section">
+    <view class="price-item">
+      <text class="price-label">商品合计</text>
+      <text class="price-value">¥{{subtotal}}</text>
+    </view>
+    <view class="price-item">
+      <text class="price-label">运费</text>
+      <text class="price-value">¥{{shippingFee}}</text>
+    </view>
+    <view class="price-item" wx:if="{{discount > 0}}">
+      <text class="price-label">优惠</text>
+      <text class="price-value discount">-¥{{discount}}</text>
+    </view>
+    <view class="price-item total">
+      <text class="price-label">应付</text>
+      <text class="price-value">¥{{totalPrice}}</text>
+    </view>
+  </view>
+
+  <!-- 底部支付 -->
+  <view class="bottom-action">
+    <button class="submit-btn" bindtap="submitOrder" loading="{{submitting}}">
+      {{submitting ? '提交中...' : '提交订单'}}
+    </button>
+  </view>
+</view>
